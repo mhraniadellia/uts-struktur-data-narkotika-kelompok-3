@@ -1,5 +1,18 @@
-# Object file
-*.o
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
 
-# Ada Library Information
-*.ali
+# Maven
+target/
+
+# Java
+*.class
+*.log
+
+# PDF putusan sumber (tidak boleh masuk repo)
+*.pdf
+
+# OS
+.DS_Store
+Thumbs.db
