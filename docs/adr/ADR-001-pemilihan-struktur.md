@@ -25,7 +25,7 @@ Aplikasi harus menyimpan 50 objek Putusan dalam satu struktur utama buatan sendi
   4. Kedua struktur dapat dibuat secara generik sehingga dapat digunakan kembali untuk tipe data lain.
 - Kekurangan:
   1. Pengaksesan data berdasarkan indeks membutuhkan penelusuran node dengan kompleksitas O(n).
-  2. Pencarian data membutuhkan pemeriksaan elemen secara berurutan.
+  2. Pencarian data berdasarkan nomor perkara atau caseId membutuhkan pemeriksaan elemen secara berurutan dengan kompleksitas O(n).
   3. Setiap node membutuhkan memori tambahan untuk menyimpan pointer ke node berikutnya. 
   4. Stack hanya dapat mengakses elemen paling atas secara langsung.
 
