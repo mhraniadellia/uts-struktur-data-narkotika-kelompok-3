@@ -43,8 +43,7 @@ public class CsvImporter {
             int nomorBaris = i + 1;
 
             try {
-                Putusan putusan = parseBaris(teks);
-                hasil.add(putusan);
+                hasil.add(parseBaris(teks));
 
             } catch (IllegalArgumentException e) {
                 errors.add(
@@ -58,33 +57,27 @@ public class CsvImporter {
 
     public Putusan parseBaris(String teks) {
 
-        if (teks == null || teks.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Baris CSV kosong"
-            );
-        }
-
-        // 1. Pecah berdasarkan titik koma
+        // 1. Pecah baris CSV
         String[] k = teks.split(";", -1);
 
-        // 2. Periksa jumlah kolom
+        // 2. Validasi jumlah kolom
         if (k.length != JUMLAH_KOLOM) {
             throw new IllegalArgumentException(
-                    "Jumlah kolom " + k.length
-                            + ", seharusnya " + JUMLAH_KOLOM
+                    "jumlah kolom " + k.length
+                            + ", seharusnya 16"
             );
         }
 
-        // 3. Periksa caseId
+        // 3. Validasi caseId
         if (k[0].isBlank()) {
             throw new IllegalArgumentException(
-                    "caseId tidak boleh kosong"
+                    "caseId kosong"
             );
         }
 
         try {
 
-            // 4. Ubah teks menjadi tipe data yang sesuai
+            // 4. Parsing tanggal dan angka
             LocalDate tanggal = LocalDate.parse(k[3].trim());
 
             double berat = Double.parseDouble(k[6].trim());
@@ -95,17 +88,16 @@ public class CsvImporter {
 
             long denda = Long.parseLong(k[11].trim());
 
-            // 5. Periksa nilai negatif
+            // 5. Validasi nilai negatif
             if (berat < 0 || tuntutan < 0
                     || vonis < 0 || denda < 0) {
 
                 throw new IllegalArgumentException(
-                        "Berat, tuntutan, vonis, dan denda "
-                                + "tidak boleh negatif"
+                        "nilai angka tidak boleh negatif"
                 );
             }
 
-            // 6. Buat objek Putusan
+            // 6. Buat dan kembalikan objek Putusan
             return new Putusan(
                     k[0],
                     k[1],
@@ -125,16 +117,12 @@ public class CsvImporter {
                     k[15]
             );
 
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | DateTimeParseException e) {
 
+            // 7. Tangani kesalahan parsing
             throw new IllegalArgumentException(
-                    "Format angka tidak valid: " + e.getMessage()
-            );
-
-        } catch (DateTimeParseException e) {
-
-            throw new IllegalArgumentException(
-                    "Format tanggal tidak valid: " + e.getMessage()
+                    "format angka/tanggal tidak valid ("
+                            + e.getMessage() + ")"
             );
         }
     }
