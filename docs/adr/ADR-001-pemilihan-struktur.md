@@ -1,3 +1,40 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # ADR-001: Pemilihan Struktur Data Utama dan Sekunder
 
 - Tanggal: 2026-11-05
