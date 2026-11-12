@@ -84,11 +84,36 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
         }
         size++;
     }
+    public void insert(int position, T value) {
+        cekIndex(position, size);
+
+        if (position == 0) {
+            addFirst(value);
+            return;
+        }
+
+        if (position == size) {
+            addLast(value);
+            return;
+        }
+
+        Node<T> prev = head;
+
+        for (int i = 0; i < position - 1; i++) {
+            prev = prev.next;
+        }
+
+        Node<T> baru = new Node<>(value);
+
+        baru.next = prev.next;
+        prev.next = baru;
+
+        size++;
+    }
     private void cekIndex(int position, int batasAtas) {
         if (position < 0 || position > batasAtas) {
             throw new IndexOutOfBoundsException(
                     "Posisi " + position + " di luar rentang 0.." + batasAtas);
         }
     }
-
 }
