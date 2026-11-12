@@ -77,6 +77,9 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
         return -1;
     }
+    public int getLangkahTerakhir() {
+        return langkahTerakhir;
+    }
 
     @Override
     public int size() {
