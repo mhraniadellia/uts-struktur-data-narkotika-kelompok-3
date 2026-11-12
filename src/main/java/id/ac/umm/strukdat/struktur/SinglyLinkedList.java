@@ -12,7 +12,15 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
     @Override
     public T get(int position) {
-        return null;
+        cekIndex(position, size - 1);
+
+        Node<T> cur = head;
+
+        for (int i = 0; i < position; i++) {
+            cur = cur.next;
+        }
+
+        return cur.data;
     }
 
     @Override
@@ -75,6 +83,12 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
             tail = baru;
         }
         size++;
+    }
+    private void cekIndex(int position, int batasAtas) {
+        if (position < 0 || position > batasAtas) {
+            throw new IndexOutOfBoundsException(
+                    "Posisi " + position + " di luar rentang 0.." + batasAtas);
+        }
     }
 
 }
