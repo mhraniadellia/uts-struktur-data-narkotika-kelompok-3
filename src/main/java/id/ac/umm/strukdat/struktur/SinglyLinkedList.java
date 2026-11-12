@@ -58,6 +58,25 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
         return target.data;
     }
+    public int search(Predicate<T> kondisi) {
+        langkahTerakhir = 0;
+
+        Node<T> cur = head;
+        int i = 0;
+
+        while (cur != null) {
+            langkahTerakhir++;
+
+            if (kondisi.test(cur.data)) {
+                return i;
+            }
+
+            cur = cur.next;
+            i++;
+        }
+
+        return -1;
+    }
 
     @Override
     public int size() {
@@ -71,8 +90,8 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
     @Override
     public boolean contains(T value) {
-        return false;
-    }
+            return search(x -> Objects.equals(x, value)) >= 0;
+        }
 
     @Override
     public void clear() {
