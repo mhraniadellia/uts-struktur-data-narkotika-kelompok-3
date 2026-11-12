@@ -25,7 +25,38 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
     @Override
     public T remove(int position) {
-        return null;
+        cekIndex(position, size - 1);
+
+        if (position == 0) {
+            T data = head.data;
+
+            head = head.next;
+            size--;
+
+            if (size == 0) {
+                tail = null;
+            }
+
+            return data;
+        }
+
+        Node<T> prev = head;
+
+        for (int i = 0; i < position - 1; i++) {
+            prev = prev.next;
+        }
+
+        Node<T> target = prev.next;
+
+        prev.next = target.next;
+
+        if (target == tail) {
+            tail = prev;
+        }
+
+        size--;
+
+        return target.data;
     }
 
     @Override
@@ -73,6 +104,7 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
         }
         size++;
     }
+
     public void addLast(T value) {
         Node<T> baru = new Node<>(value);
         if (size == 0) {
@@ -84,6 +116,7 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
         }
         size++;
     }
+
     public void insert(int position, T value) {
         cekIndex(position, size);
 
@@ -110,6 +143,7 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
         size++;
     }
+
     private void cekIndex(int position, int batasAtas) {
         if (position < 0 || position > batasAtas) {
             throw new IndexOutOfBoundsException(
