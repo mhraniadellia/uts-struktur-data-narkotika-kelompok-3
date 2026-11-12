@@ -5,6 +5,41 @@ import java.util.function.Predicate;
 
 public class SinglyLinkedList<T> implements StrukturData<T> {
 
+    @Override
+    public void add(T value) {
+
+    }
+
+    @Override
+    public T get(int position) {
+        return null;
+    }
+
+    @Override
+    public T remove(int position) {
+        return null;
+    }
+
+    @Override
+    public int size() {
+        return 0;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    @Override
+    public boolean contains(T value) {
+        return false;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
     private static class Node<T> {
         T data;
         Node<T> next;
