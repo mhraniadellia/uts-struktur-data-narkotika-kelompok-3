@@ -169,4 +169,25 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
                     "Posisi " + position + " di luar rentang 0.." + batasAtas);
         }
     }
+    public boolean validateInvariant() {
+        if (size == 0) {
+            return head == null && tail == null;
+        }
+
+        if (head == null || tail == null || tail.next != null) {
+            return false;
+        }
+
+        int hitung = 0;
+        Node<T> terakhir = null;
+        Node<T> cur = head;
+
+        while (cur != null) {
+            hitung++;
+            terakhir = cur;
+            cur = cur.next;
+        }
+
+        return hitung == size && terakhir == tail;
+    }
 }
