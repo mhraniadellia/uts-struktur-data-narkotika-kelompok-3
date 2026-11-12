@@ -7,7 +7,7 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
     @Override
     public void add(T value) {
-
+        addLast(value);
     }
 
     @Override
@@ -22,12 +22,12 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
     @Override
     public int size() {
-        return 0;
+        return size;
     }
 
     @Override
     public boolean isEmpty() {
-        return false;
+        return size == 0;
     }
 
     @Override
@@ -37,7 +37,9 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
 
     @Override
     public void clear() {
-
+        head = null;
+        tail = null;
+        size = 0;
     }
 
     private static class Node<T> {
@@ -59,6 +61,17 @@ public class SinglyLinkedList<T> implements StrukturData<T> {
         baru.next = head;
         head = baru;
         if (size == 0) {
+            tail = baru;
+        }
+        size++;
+    }
+    public void addLast(T value) {
+        Node<T> baru = new Node<>(value);
+        if (size == 0) {
+            head = baru;
+            tail = baru;
+        } else {
+            tail.next = baru;
             tail = baru;
         }
         size++;
