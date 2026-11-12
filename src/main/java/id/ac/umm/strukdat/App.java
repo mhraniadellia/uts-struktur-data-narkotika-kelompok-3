@@ -105,8 +105,57 @@ public class App {
     }
 
     private void menuTambah() {
-        System.out.println("(belum dibuat)");
+        System.out.println("\n=== TAMBAH PUTUSAN ===");
+        System.out.println("Tempel satu baris CSV (16 kolom, pemisah ;):");
+
+        String teks = input.nextLine().trim();
+
+        try {
+            // Parsing dan validasi data
+            Putusan p = new CsvImporter().parseBaris(teks);
+
+            // Cek caseId duplikat
+            if (daftar.search(x ->
+                    x.getCaseId().equalsIgnoreCase(p.getCaseId())) >= 0) {
+
+                System.out.println("caseId " + p.getCaseId()
+                        + " sudah ada, tidak ditambahkan.");
+                return;
+            }
+
+            // Meminta posisi penyisipan
+            System.out.print("Posisi sisip (kosongkan untuk tambah di akhir, 0.."
+                    + daftar.size() + "): ");
+
+            String teksPosisi = input.nextLine().trim();
+
+            // Menambahkan data
+            if (teksPosisi.isEmpty()) {
+                daftar.add(p);
+            } else {
+                int posisi = Integer.parseInt(teksPosisi);
+                daftar.insert(posisi, p);
+            }
+
+            System.out.println("Putusan " + p.getCaseId()
+                    + " berhasil ditambahkan.");
+
+            System.out.println("Jumlah data sekarang: " + daftar.size());
+
+            System.out.println("Validasi struktur: "
+                    + daftar.validateInvariant());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Posisi harus berupa angka.");
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("Data tidak valid: " + e.getMessage());
+
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("Posisi tidak valid: " + e.getMessage());
+        }
     }
+
 
     private void menuHapus() {
         if (daftar.isEmpty()) {
