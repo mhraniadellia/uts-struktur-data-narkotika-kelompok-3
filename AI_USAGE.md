@@ -3,9 +3,6 @@
 Dokumen ini mencatat setiap penggunaan AI generatif dalam pengerjaan UTS,
 sesuai Kebijakan Penggunaan AI pada panduan bagian 6.
 
-| No | Tanggal | Anggota | Alat | Tujuan | Prompt / ringkasan                                                | Bagian keluaran yang digunakan | Perubahan yang dilakukan | Cara verifikasi |
-|----|---------|---------|------|--------|-------------------------------------------------------------------|-------------------------------|--------------------------|-----------------|## Anggota A – Maharani
-
 | No | Tanggal | Anggota | Alat | Tujuan | Prompt / ringkasan | Bagian keluaran yang digunakan | Perubahan yang dilakukan | Cara verifikasi |
 |----|---------|---------|------|--------|--------------------|-------------------------------|--------------------------|-----------------|
 | 1 | 2026-11-04 | Maharani | Claude (Anthropic) | Menyusun roadmap dan pembagian tugas | "Pandu kerjakan UTS berdasarkan panduan, buat roadmap per anggota" | Urutan fase, pembagian peran A/B, daftar Issue/PR | Disesuaikan dengan kesepakatan kelompok | Dicocokkan dengan panduan bagian 3–8 |
