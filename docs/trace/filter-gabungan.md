@@ -17,4 +17,5 @@ P024 (Metamfetamina/Ganja) ikut terambil karena filter jenis memakai "mengandung
 
 ## Tangkapan layar hasil menu 6
 
-![Hasil filter gabungan](../demo/filter-gabungan.png)
+![Hasil filter gabungan (1)](../demo/filter-gabungan1.png)
+![Hasil filter gabungan (2)](../demo/filter-gabungan2.png)
