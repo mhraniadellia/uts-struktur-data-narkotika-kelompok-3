@@ -1,0 +1,12 @@
+LAPORAN AGREGASI PUTUSAN NARKOTIKA
+====================================
+
+Sumber data: hasil filter/urutan terakhir (27 putusan)
+
+Jumlah perkara: 27
+Rata-rata vonis: 71.78 bulan
+Total denda: Rp18600000000
+
+Distribusi jenis narkotika:
+1. Metamfetamina: 27
+2. Ganja: 1
