@@ -15,4 +15,6 @@
 Hasil aplikasi dan pemeriksaan manual **cocok**: jumlah (27) dan daftar caseId sama.
 P024 (Metamfetamina/Ganja) ikut terambil karena filter jenis memakai "mengandung", sesuai rancangan.
 
-Tangkapan layar hasil menu 6: docs/demo/filter-gabungan.png
+## Tangkapan layar hasil menu 6
+
+![Hasil filter gabungan](../demo/filter-gabungan.png)
