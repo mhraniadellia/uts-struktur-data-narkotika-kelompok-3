@@ -4,7 +4,9 @@ package id.ac.umm.strukdat;
 import id.ac.umm.strukdat.io.CsvImporter;
 import id.ac.umm.strukdat.model.Putusan;
 import id.ac.umm.strukdat.struktur.SinglyLinkedList;
-
+import id.ac.umm.strukdat.layanan.FilterService;
+import id.ac.umm.strukdat.layanan.AgregasiService;
+import java.util.function.Predicate;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -30,6 +32,8 @@ public class App {
             System.out.println("3. Tambah putusan");
             System.out.println("4. Hapus putusan");
             System.out.println("5. Cari putusan");
+            System.out.println("6. Filter putusan");
+            System.out.println("7. Agregasi");
             System.out.println("0. Keluar");
             System.out.print("Pilih menu: ");
 
@@ -41,6 +45,8 @@ public class App {
                 case "3" -> menuTambah();
                 case "4" -> menuHapus();
                 case "5" -> menuCari();
+                case "6" -> menuFilter();
+                case "7" -> menuAgregasi();
                 case "0" -> lanjut = false;
                 default -> System.out.println("Pilihan tidak dikenal.");
             }
@@ -79,7 +85,6 @@ public class App {
         }
     }
 
-    // Menu 2: Tampilkan semua putusan
     private void menuTampil() {
         if (daftar.isEmpty()) {
             System.out.println("Belum ada data putusan. Silakan impor data terlebih dahulu.");
@@ -111,10 +116,8 @@ public class App {
         String teks = input.nextLine().trim();
 
         try {
-            // Parsing dan validasi data
             Putusan p = new CsvImporter().parseBaris(teks);
 
-            // Cek caseId duplikat
             if (daftar.search(x ->
                     x.getCaseId().equalsIgnoreCase(p.getCaseId())) >= 0) {
 
@@ -123,13 +126,11 @@ public class App {
                 return;
             }
 
-            // Meminta posisi penyisipan
             System.out.print("Posisi sisip (kosongkan untuk tambah di akhir, 0.."
                     + daftar.size() + "): ");
 
             String teksPosisi = input.nextLine().trim();
 
-            // Menambahkan data
             if (teksPosisi.isEmpty()) {
                 daftar.add(p);
             } else {
@@ -215,6 +216,131 @@ public class App {
 
         System.out.println("Jumlah langkah pencarian: "
                 + daftar.getLangkahTerakhir());
+    }
+
+    private void menuFilter() {
+        if (daftar.isEmpty()) {
+            System.out.println("Data putusan masih kosong.");
+            return;
+        }
+
+        FilterService fs = new FilterService();
+        Predicate<Putusan> kondisi = p -> true;
+
+        System.out.println("\n=== MENU FILTER PUTUSAN ===");
+
+        try {
+            System.out.print("Jenis narkotika (kosongkan jika tidak difilter): ");
+            String jenis = input.nextLine().trim();
+
+            if (!jenis.isEmpty()) {
+                kondisi = kondisi.and(fs.jenis(jenis));
+            }
+
+            System.out.print("Berat minimum (gram): ");
+            String minBerat = input.nextLine().trim();
+
+            System.out.print("Berat maksimum (gram): ");
+            String maxBerat = input.nextLine().trim();
+
+            if (!minBerat.isEmpty() && !maxBerat.isEmpty()) {
+                double min = Double.parseDouble(minBerat);
+                double max = Double.parseDouble(maxBerat);
+
+                if (min > max) {
+                    System.out.println("Peringatan: berat minimum tidak boleh lebih besar dari maksimum.");
+                    return;
+                }
+
+                kondisi = kondisi.and(fs.rentangBerat(min, max));
+            } else if (!minBerat.isEmpty() || !maxBerat.isEmpty()) {
+                System.out.println("Rentang berat diabaikan karena min/max tidak lengkap.");
+            }
+
+            System.out.print("Pasal terbukti (kosongkan jika tidak difilter): ");
+            String pasal = input.nextLine().trim();
+
+            if (!pasal.isEmpty()) {
+                kondisi = kondisi.and(fs.pasalTerbukti(pasal));
+            }
+
+            System.out.print("Vonis minimum (bulan): ");
+            String minVonis = input.nextLine().trim();
+
+            System.out.print("Vonis maksimum (bulan): ");
+            String maxVonis = input.nextLine().trim();
+
+            if (!minVonis.isEmpty() && !maxVonis.isEmpty()) {
+                int min = Integer.parseInt(minVonis);
+                int max = Integer.parseInt(maxVonis);
+
+                if (min > max) {
+                    System.out.println("Peringatan: vonis minimum tidak boleh lebih besar dari maksimum.");
+                    return;
+                }
+
+                kondisi = kondisi.and(fs.rentangVonis(min, max));
+            } else if (!minVonis.isEmpty() || !maxVonis.isEmpty()) {
+                System.out.println("Rentang vonis diabaikan karena min/max tidak lengkap.");
+            }
+
+            SinglyLinkedList<Putusan> hasil = fs.filter(daftar, kondisi);
+
+            System.out.println("\n=== HASIL FILTER ===");
+
+            if (hasil.isEmpty()) {
+                System.out.println("Tidak ada putusan yang sesuai dengan kriteria.");
+            } else {
+                for (int i = 0; i < hasil.size(); i++) {
+                    Putusan p = hasil.get(i);
+
+                    System.out.println((i + 1) + ". " + p.getCaseId()
+                            + " | " + p.getNomorPerkara()
+                            + " | " + p.getJenisNarkotika()
+                            + " | " + p.getBeratBarangBuktiGram() + " gram"
+                            + " | " + p.getPasalTerbukti()
+                            + " | " + p.getVonisBulan() + " bulan");
+                }
+            }
+
+            System.out.println("Jumlah hasil filter: " + hasil.size());
+
+        } catch (NumberFormatException e) {
+            System.out.println("Berat dan vonis harus berupa angka.");
+        }
+    }
+
+    private void menuAgregasi() {
+        if (daftar.isEmpty()) {
+            System.out.println("Data putusan masih kosong.");
+            return;
+        }
+
+        AgregasiService ag = new AgregasiService();
+
+        System.out.println("\n=== MENU AGREGASI PUTUSAN ===");
+
+        System.out.println("Jumlah perkara       : "
+                + ag.jumlahPerkara(daftar));
+
+        System.out.printf("Rata-rata vonis      : %.2f bulan%n",
+                ag.rataRataVonis(daftar));
+
+        System.out.println("Total denda          : Rp"
+                + ag.totalDenda(daftar));
+
+        System.out.println("\nDistribusi jenis narkotika:");
+
+        SinglyLinkedList<AgregasiService.JumlahJenis> distribusi =
+                ag.distribusiJenis(daftar);
+
+        if (distribusi.isEmpty()) {
+            System.out.println("Tidak ada data distribusi jenis narkotika.");
+        } else {
+            for (int i = 0; i < distribusi.size(); i++) {
+                System.out.println((i + 1) + ". " + distribusi.get(i));
+            }
+        }
     }
 
     private void cetakDetail(Putusan p) {
