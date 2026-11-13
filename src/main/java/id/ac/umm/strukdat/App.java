@@ -9,6 +9,9 @@ import id.ac.umm.strukdat.layanan.AgregasiService;
 import java.util.function.Predicate;
 import java.io.IOException;
 import java.util.Scanner;
+import id.ac.umm.strukdat.struktur.AuditStack;
+import id.ac.umm.strukdat.layanan.UrutanService;
+import id.ac.umm.strukdat.layanan.EksporService;
 
 public class App {
 
@@ -16,9 +19,16 @@ public class App {
 
     private final Scanner input = new Scanner(System.in);
     private SinglyLinkedList<Putusan> daftar = new SinglyLinkedList<>();
-
+    private final AuditStack<String> audit = new AuditStack<>();
+    private SinglyLinkedList<Putusan> hasilTerakhir = new SinglyLinkedList<>();
     public static void main(String[] args) {
         new App().jalankan();
+    }
+    private void catat(String aksi) {
+        String waktu = java.time.LocalTime.now()
+                .withNano(0).toString();
+
+        audit.push(waktu + " " + aksi);
     }
 
     private void jalankan() {
@@ -34,6 +44,9 @@ public class App {
             System.out.println("5. Cari putusan");
             System.out.println("6. Filter putusan");
             System.out.println("7. Agregasi");
+            System.out.println("8. Urutkan berdasarkan vonis");
+            System.out.println("9. Riwayat audit");
+            System.out.println("10. Ekspor hasil terakhir");
             System.out.println("0. Keluar");
             System.out.print("Pilih menu: ");
 
@@ -47,6 +60,9 @@ public class App {
                 case "5" -> menuCari();
                 case "6" -> menuFilter();
                 case "7" -> menuAgregasi();
+                case "8" -> menuUrutan();
+                case "9" -> menuRiwayat();
+                case "10" -> menuEkspor();
                 case "0" -> lanjut = false;
                 default -> System.out.println("Pilihan tidak dikenal.");
             }
@@ -78,6 +94,8 @@ public class App {
 
             System.out.println("Validasi struktur: "
                     + daftar.validateInvariant());
+
+            catat("IMPOR " + daftar.size() + " putusan");
 
         } catch (IOException e) {
             System.out.println("Gagal membaca file CSV: "
@@ -146,6 +164,8 @@ public class App {
             System.out.println("Validasi struktur: "
                     + daftar.validateInvariant());
 
+            catat("TAMBAH " + p.getCaseId());
+
         } catch (NumberFormatException e) {
             System.out.println("Posisi harus berupa angka.");
 
@@ -180,6 +200,8 @@ public class App {
 
             System.out.println("Validasi struktur: "
                     + daftar.validateInvariant());
+
+            catat("HAPUS " + terhapus.getCaseId());
 
         } catch (NumberFormatException e) {
             System.out.println("Posisi harus berupa angka.");
@@ -216,6 +238,9 @@ public class App {
 
         System.out.println("Jumlah langkah pencarian: "
                 + daftar.getLangkahTerakhir());
+
+        catat("CARI " + kunci + " ("
+                + daftar.getLangkahTerakhir() + " langkah)");
     }
 
     private void menuFilter() {
@@ -305,6 +330,9 @@ public class App {
 
             System.out.println("Jumlah hasil filter: " + hasil.size());
 
+            hasilTerakhir = hasil;
+            catat("FILTER " + hasil.size() + " hasil");
+
         } catch (NumberFormatException e) {
             System.out.println("Berat dan vonis harus berupa angka.");
         }
@@ -341,7 +369,143 @@ public class App {
                 System.out.println((i + 1) + ". " + distribusi.get(i));
             }
         }
+        catat("AGREGASI");
     }
+
+    private void menuRiwayat() {
+        if (audit.isEmpty()) {
+            System.out.println("Belum ada riwayat aktivitas.");
+            return;
+        }
+
+        System.out.println("\n=== RIWAYAT AUDIT ===");
+
+        for (int i = 0; i < audit.size(); i++) {
+            System.out.println((i + 1) + ". " + audit.lihat(i));
+        }
+
+        System.out.print("\nCari kata kunci di riwayat (kosongkan untuk lewati): ");
+        String kata = input.nextLine().trim();
+
+        if (!kata.isEmpty()) {
+            int sebelum = audit.size();
+
+            int posisi = audit.searchPreserve(x ->
+                    x.toLowerCase().contains(kata.toLowerCase())
+            );
+
+            if (posisi >= 0) {
+                System.out.println("Riwayat ditemukan pada posisi: " + (posisi + 1));
+                System.out.println("Isi riwayat: " + audit.lihat(posisi));
+            } else {
+                System.out.println("Riwayat tidak ditemukan.");
+            }
+
+            System.out.println("Jumlah langkah pencarian: "
+                    + audit.getLangkahTerakhir());
+
+            System.out.println("Jumlah riwayat sebelum/sesudah pencarian: "
+                    + sebelum + " / " + audit.size());
+
+            System.out.println("Validasi struktur audit: "
+                    + audit.validateInvariant());
+        }
+    }
+
+
+    private void menuUrutan() {
+        if (daftar.isEmpty()) {
+            System.out.println("Data putusan masih kosong.");
+            return;
+        }
+
+        System.out.println("\n=== URUTKAN PUTUSAN BERDASARKAN VONIS ===");
+        System.out.println("1. Vonis terendah ke tertinggi");
+        System.out.println("2. Vonis tertinggi ke terendah");
+        System.out.print("Pilih urutan: ");
+
+        String pilihan = input.nextLine().trim();
+
+        if (!pilihan.equals("1") && !pilihan.equals("2")) {
+            System.out.println("Pilihan urutan tidak valid.");
+            return;
+        }
+
+        boolean naik = pilihan.equals("1");
+
+        SinglyLinkedList<Putusan> terurut =
+                new UrutanService().urutkanVonis(daftar, naik);
+
+        System.out.println("\n=== HASIL PENGURUTAN ===");
+
+        for (int i = 0; i < terurut.size(); i++) {
+            Putusan p = terurut.get(i);
+
+            System.out.println((i + 1) + ". "
+                    + p.getCaseId() + " | "
+                    + p.getNomorPerkara() + " | "
+                    + p.getVonisBulan() + " bulan");
+        }
+
+        System.out.println("Validasi list utama: "
+                + daftar.validateInvariant());
+
+        System.out.println("Validasi list terurut: "
+                + terurut.validateInvariant());
+
+        hasilTerakhir = terurut;
+
+        catat("URUTAN vonis " + (naik ? "naik" : "turun"));
+    }
+
+
+    private void menuEkspor() {
+        if (hasilTerakhir.isEmpty()) {
+            System.out.println("Lakukan filter atau urutan terlebih dahulu.");
+            return;
+        }
+
+        System.out.println("\n=== MENU EKSPOR ===");
+        System.out.println("1. Ekspor hasil terakhir ke CSV");
+        System.out.println("2. Ekspor laporan agregasi ke TXT");
+        System.out.print("Pilih jenis ekspor: ");
+
+        String pilihan = input.nextLine().trim();
+
+        EksporService ekspor = new EksporService();
+
+        try {
+            if (pilihan.equals("1")) {
+                String path = "docs/demo/ekspor-hasil.csv";
+
+                ekspor.eksporCsv(hasilTerakhir, path);
+
+                System.out.println("Berhasil mengekspor "
+                        + hasilTerakhir.size() + " putusan.");
+                System.out.println("Lokasi file: " + path);
+
+                catat("EKSPOR " + hasilTerakhir.size() + " putusan");
+
+            } else if (pilihan.equals("2")) {
+                String path = "docs/demo/laporan-agregasi.txt";
+
+                ekspor.eksporTeks(hasilTerakhir, path);
+
+                System.out.println("Laporan agregasi berhasil diekspor.");
+                System.out.println("Lokasi file: " + path);
+
+                catat("EKSPOR laporan agregasi");
+
+            } else {
+                System.out.println("Pilihan ekspor tidak valid.");
+            }
+
+        } catch (IOException e) {
+            System.out.println("Gagal menulis file: " + e.getMessage());
+        }
+    }
+
+
 
     private void cetakDetail(Putusan p) {
         System.out.println("Case ID             : " + p.getCaseId());
